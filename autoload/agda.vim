@@ -70,7 +70,7 @@ endfunction
 
 function s:stop_agda()
   if exists('b:agda_ctx')
-    call jobstop(b:agda_ctx)
+    call jobstop(b:agda_ctx.job)
     unlet b:agda_ctx
   endif
 endfunction
