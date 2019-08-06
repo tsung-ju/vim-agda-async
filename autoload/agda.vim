@@ -36,7 +36,7 @@ function agda#refine()
 endfunction
 
 function s:goal_command(cmd)
-  let l:goals = agda#goal#get_all()
+  let l:goals = agda#goal#get_all(bufnr('%'))
   let l:goal_index = agda#goal#find_current(l:goals)
 
   if l:goal_index == -1
@@ -204,8 +204,7 @@ endfunction
 function s:handler.GiveAction(ctx, msg)
   let l:goal_index = index(a:ctx.interaction_points, a:msg.interactionPoint)
   if l:goal_index != -1
-    " TODO find goals in a:ctx.buf
-    let l:goal = agda#goal#get_all()[l:goal_index]
+    let l:goal = agda#goal#get_all(a:ctx.buf)[l:goal_index]
     call agda#goal#set_body(a:ctx.buf, l:goal, a:msg.giveResult)
   endif
 endfunction
