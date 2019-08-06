@@ -1,3 +1,16 @@
+function agda#reset_syntax()
+  syntax clear
+  runtime syntax/agda.vim
+endfunction
+
+function agda#reload_syntax()
+  call agda#reset_syntax()
+  let l:path = expand('%:h') . '/.' . expand('%:t') . '.vim'
+  if filereadable(l:path)
+    exec 'source ' . escape(l:path, '*')
+  endif
+endfunction
+
 function agda#load()
   call s:send_command('(Cmd_load ' . json_encode(expand('%')) . ' [])')
 endfunction
@@ -116,7 +129,10 @@ endfunction
 
 let s:handler = {}
 function s:handler.Status(ch, msg)
-  call s:reload_syntax()
+  let l:buf = s:get_channel_data(a:ch).buf
+  if l:buf == bufnr('%')
+    call agda#reload_syntax()
+  endif
 endfunction
 
 function s:handler.RunningInfo(ch, msg)
@@ -126,7 +142,10 @@ function s:handler.RunningInfo(ch, msg)
 endfunction
 
 function s:handler.ClearHighlighting(ch, msg)
-  call s:reset_syntax()
+  let l:buf = s:get_channel_data(a:ch).buf
+  if l:buf == bufnr('%')
+    call agda#reset_syntax()
+  endif
   cclose
   call setqflist([], 'r')
 endfunction
@@ -332,17 +351,4 @@ function s:find_goals()
 
   call winrestview(l:view)
   return l:goals
-endfunction
-
-function s:reset_syntax()
-  syntax clear
-  runtime syntax/agda.vim
-endfunction
-
-function s:reload_syntax()
-  call s:reset_syntax()
-  let l:path = expand('%:h') . '/.' . expand('%:t') . '.vim'
-  if filereadable(l:path)
-    exec 'source ' . escape(l:path, '*')
-  endif
 endfunction
