@@ -43,9 +43,7 @@ function s:goal_command(cmd)
     return
   endif
 
-  let l:ch = job_getchannel(b:agda_job)
-  let l:interaction_points = s:get_channel_data(l:ch).interaction_points
-  let l:goal_name = l:interaction_points[l:goal_index]
+  let l:goal_name = b:agda_ctx.interaction_points[l:goal_index]
 
   let l:goal_body = s:get_goal_body(goals[l:goal_index])
 
@@ -56,42 +54,23 @@ function s:goal_command(cmd)
   call s:send_command('(' . join(l:cmd) . ')')
 endfunction
 
-let s:channel_data = {}
-function s:get_channel_data(ch)
-  let l:id = ch_info(a:ch).id
-  return s:channel_data[l:id]
-endfunction
-
-function s:set_channel_data(ch, data)
-  let l:id = ch_info(a:ch).id
-  let s:channel_data[l:id] = a:data
-endfunction
-
-function s:remove_channel_data(ch)
-  let l:id = ch_info(a:ch).id
-  call remove(s:channel_data, l:id)
-endfunction
-
-
 function s:start_agda()
-  if !exists('b:agda_job')
-    let l:job = job_start(
+  if !exists('b:agda_ctx')
+    let l:ctx = {}
+    let l:ctx.buf = bufnr('%')
+    let l:ctx.interaction_points = []
+    let l:ctx.job = job_start(
       \ ['agda', '--vim', '--interaction-json'],
-      \ {'out_cb': function('s:handle_response')})
-    let l:channel = job_getchannel(l:job)
-    let b:agda_job = l:job
-    call s:set_channel_data(l:channel, {
-      \ 'buf': bufnr('%'),
-      \ 'interaction_points': []
-    \ })
+      \ {'out_cb': function('s:handle_response', [l:ctx])})
+    let l:ctx.ch = job_getchannel(l:ctx.job)
+    let b:agda_ctx = l:ctx
   endif
 endfunction
 
 function s:stop_agda()
-  if exists('b:agda_job')
-    call s:remove_channel_data(job_getchannel(b:agda_job))
-    call jobstop(b:agda_job)
-    unlet b:agda_job
+  if exists('b:agda_ctx')
+    call jobstop(b:agda_ctx)
+    unlet b:agda_ctx
   endif
 endfunction
 
@@ -103,23 +82,19 @@ function s:send_command(interatcion)
     \ 'Direct',
     \ a:interatcion ]
 
-  if !exists('b:agda_job')
-    call s:start_agda()
-  endif
+  call s:start_agda()
 
-  let l:channel = job_getchannel(b:agda_job)
-
-  call ch_sendraw(l:channel, join(l:args) . "\n")
+  call ch_sendraw(b:agda_ctx.ch, join(l:args) . "\n")
 endfunction
 
-function s:handle_response(ch, msg)
+function s:handle_response(ctx, ch, msg)
   let l:msg = s:parse_response(a:msg)
   if l:msg.kind !=# 'HighlightingInfo'
     echom l:msg.kind
     echom string(l:msg)
   endif
   if has_key(s:handler, l:msg.kind)
-    call s:handler[l:msg.kind](a:ch, l:msg)
+    call s:handler[l:msg.kind](a:ctx, l:msg)
   endif
 endfunction
 
@@ -128,31 +103,28 @@ function s:parse_response(msg)
 endfunction
 
 let s:handler = {}
-function s:handler.Status(ch, msg)
-  let l:buf = s:get_channel_data(a:ch).buf
-  if l:buf == bufnr('%')
+function s:handler.Status(ctx, msg)
+  if a:ctx.buf == bufnr('%')
     call agda#reload_syntax()
   endif
 endfunction
 
-function s:handler.RunningInfo(ch, msg)
+function s:handler.RunningInfo(ctx, msg)
   for l:line in split(a:msg.message, "\n")
     echom l:line
   endfor
 endfunction
 
-function s:handler.ClearHighlighting(ch, msg)
-  let l:buf = s:get_channel_data(a:ch).buf
-  if l:buf == bufnr('%')
+function s:handler.ClearHighlighting(ctx, msg)
+  if a:ctx.buf == bufnr('%')
     call agda#reset_syntax()
   endif
   cclose
   call setqflist([], 'r')
 endfunction
 
-function s:handler.InteractionPoints(ch, msg)
-  let l:channel_data = s:get_channel_data(a:ch)
-  let l:channel_data.interaction_points = a:msg.interactionPoints
+function s:handler.InteractionPoints(ctx, msg)
+  let a:ctx.interaction_points = a:msg.interactionPoints
 endfunction
 
 let s:error_atoms = [
@@ -168,9 +140,9 @@ let s:error_atoms = [
   \ 'confluenceproblem',
 \ ]
 
-function s:handler.HighlightingInfo(ch, msg)
+function s:handler.HighlightingInfo(ctx, msg)
   let l:inited = 0
-  let l:buf = s:get_channel_data(a:ch).buf
+  let l:buf = a:ctx.buf
 
   for l:item in a:msg.info.payload
     for l:atom in l:item.atoms
@@ -228,13 +200,10 @@ function s:chars2pos(lines, line_starts, chars)
   return [l:lnum, l:col]
 endfunction
 
-function s:handler.GiveAction(ch, msg)
-  let l:channel_data = s:get_channel_data(a:ch)
-  let l:buf = l:channel_data.buf
-  let l:interaction_points = l:channel_data.interaction_points
-  let l:goal_index = index(l:interaction_points, a:msg.interactionPoint)
+function s:handler.GiveAction(ctx, msg)
+  let l:goal_index = index(a:ctx.interaction_points, a:msg.interactionPoint)
   let l:goal = s:find_goals()[l:goal_index]
-  call s:set_goal_body(l:buf, l:goal, a:msg.giveResult)
+  call s:set_goal_body(a:ctx.buf, l:goal, a:msg.giveResult)
 endfunction
 
 let s:question_mark_pattern = '\(^\|(\|)\|{\|}\| \)\@<=?\($\|(\|)\|{\|}\| \)\@='
