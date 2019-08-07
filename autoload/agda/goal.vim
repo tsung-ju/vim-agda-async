@@ -1,4 +1,5 @@
-let s:pattern_question_mark = '\(^\|(\|)\|{\|}\| \)\@<=?\($\|(\|)\|{\|}\| \)\@='
+let s:pat_pre = '\(^\|\s\|[.(){};]\)\@<='
+let s:pat_post = '\($\|\s\|[.(){};]\)\@='
 
 function agda#goal#go_next()
   let l:goals = agda#goal#get_all(bufnr('%'))
@@ -57,7 +58,7 @@ endfunction
 
 function agda#goal#set_body(buf, goal, body)
   let [l:type, l:start, l:end] = a:goal
-  let l:body = substitute(a:body, s:pattern_question_mark, '{! !}', 'g')
+  let l:body = substitute(a:body, s:pat_pre . '?' . s:pat_post, '{! !}', 'g')
   let l:lines = split(l:body, "\n")
   let l:prefix = getline(l:start[0])[:l:start[1] - 2]
   let l:suffix = getline(l:end[0])[l:end[1]:]
@@ -70,7 +71,11 @@ function agda#goal#set_body(buf, goal, body)
 endfunction
 
 function agda#goal#get_all(buf)
-  let l:pattern_token = '\(--\)\|\({-\)\|\({!\)\|\(!}\)\|\(' . s:pattern_question_mark . '\)'
+  let l:pat_token = join([
+    \ s:pat_pre . '--',
+    \ '{-', '{!', '!}',
+    \ s:pat_pre . '?' . s:pat_post,
+  \ ], '\|')
 
   let l:lines = getbufline(a:buf, 1, '$')
 
@@ -85,8 +90,8 @@ function agda#goal#get_all(buf)
     let l:off = 0
 
     while l:off < l:len
-      let l:pattern = l:in_comment ? '-}' : l:pattern_token
-      let [l:match, l:start, l:end] = matchstrpos(l:line, l:pattern, l:off)
+      let l:pat = l:in_comment ? '-}' : l:pat_token
+      let [l:match, l:start, l:end] = matchstrpos(l:line, l:pat, l:off)
 
       if l:start == -1
         break
