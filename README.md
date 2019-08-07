@@ -23,6 +23,8 @@ For example, `<LocalLeader>um` `<LocalLeader>uum`
 | \<LocalLeader>=        |       | v      |                | Show constraints |
 | \<LocalLeader>s        | v     | v      |                | Solve constraints |
 | \<LocalLeader>?        |       | v      |                | Show goals |
+| \<LocalLeader>f        |       | v      |                | Next goal |
+| \<LocalLeader>b        |       | v      |                | Previous goal |
 | \]g                    |       | v      |                | Next goal |
 | \[g                    |       | v      |                | Previous goal |
 | \<LocalLeader>\<Space> | v     |        | `u`            | Give |
@@ -41,4 +43,3 @@ For example, `<LocalLeader>um` `<LocalLeader>uum`
 | \<LocalLeader>z        | v     | v      | `u` `uu`       | Search About |
 | \<LocalLeader>o        | v     | v      | `u` `uu`       | Module contents |
 | \<LocalLeader>n        | v     | v      | `u`            | Evaluate term to normal form |
-

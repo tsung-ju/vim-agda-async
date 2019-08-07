@@ -20,6 +20,8 @@ call s:map('xa', 'abort')
 call s:map('xh', 'toggle_implicit_args')
 call s:map('=', 'constraints')
 call s:map('?', 'metas')
+call s:map('f', 'goal#go_next()')
+call s:map('b', 'goal#go_prev()')
 
 call s:map_u('<space>', 'give', ['WithoutForce', 'WithForce'])
 call s:map_normalise('m', 'elaborate_give')
