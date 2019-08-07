@@ -222,6 +222,8 @@ function s:goal_command(cmd, ...)
 endfunction
 
 function s:send_command(cmd)
+  silent update
+
   let l:args = [
     \ 'IOTCM',
     \ json_encode(expand('%')),
