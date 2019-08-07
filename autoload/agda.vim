@@ -1,3 +1,28 @@
+function agda#start()
+  if !exists('b:agda_ctx')
+    let l:ctx = {}
+    let l:ctx.buf = bufnr('%')
+    let l:ctx.interaction_points = []
+    let l:ctx.job = job_start(
+      \ ['agda', '--interaction-json'],
+      \ {'out_cb': function('s:handle_response', [l:ctx])})
+    let l:ctx.ch = job_getchannel(l:ctx.job)
+    let b:agda_ctx = l:ctx
+  endif
+endfunction
+
+function agda#stop()
+  if exists('b:agda_ctx')
+    call job_stop(b:agda_ctx.job)
+    unlet b:agda_ctx
+  endif
+endfunction
+
+function agda#restart()
+  call agda#start()
+  call agda#stop()
+endfunction
+
 " commands
 function agda#load()
   call s:send_command(
@@ -61,6 +86,10 @@ endfunction
 
 function agda#abort()
   call s:send_command(['Cmd_abort'])
+endfunction
+
+function agda#toggle_implicit_args()
+  call s:send_command(['ToggleImplicitArgs'])
 endfunction
 
 " goal commands
@@ -200,29 +229,9 @@ function s:send_command(cmd)
     \ 'Direct',
     \ '(' . join(a:cmd) . ')' ]
 
-  call s:start_agda()
+  call agda#start()
 
   call ch_sendraw(b:agda_ctx.ch, join(l:args) . "\n")
-endfunction
-
-function s:start_agda()
-  if !exists('b:agda_ctx')
-    let l:ctx = {}
-    let l:ctx.buf = bufnr('%')
-    let l:ctx.interaction_points = []
-    let l:ctx.job = job_start(
-      \ ['agda', '--interaction-json'],
-      \ {'out_cb': function('s:handle_response', [l:ctx])})
-    let l:ctx.ch = job_getchannel(l:ctx.job)
-    let b:agda_ctx = l:ctx
-  endif
-endfunction
-
-function s:stop_agda()
-  if exists('b:agda_ctx')
-    call jobstop(b:agda_ctx.job)
-    unlet b:agda_ctx
-  endif
 endfunction
 
 

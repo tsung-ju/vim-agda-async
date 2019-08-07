@@ -15,6 +15,9 @@ endfunction
 
 call s:map('l', 'load')
 call s:map('xc', 'compile')
+call s:map('xr', 'restart')
+call s:map('xa', 'abort')
+call s:map('xh', 'toggle_implicit_args')
 call s:map('=', 'constraints')
 call s:map('?', 'metas')
 
