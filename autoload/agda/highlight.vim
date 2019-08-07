@@ -12,7 +12,7 @@ function agda#highlight#highlight(buf, items)
     let l:end = s:chars2pos(l:item.range[1], l:state)
 
     for l:atom in l:item.atoms
-      call s:prop_add_multiline(a:buf, l:lines, l:start, l:end, 'agda_' . l:atom)
+      call s:prop_add_multiline(a:buf, l:lines, l:start, l:end, 'agda_atom_' . l:atom)
       if index(s:atoms_error, l:atom) != -1
         call s:mark_error(a:buf, l:item, l:atom, l:start)
       endif
@@ -23,7 +23,7 @@ endfunction
 function agda#highlight#clear(buf)
   if getbufvar(a:buf, 'agda_highlight_inited', v:false)
     for l:atom in s:atoms_all
-      call prop_remove({'type': 'agda_' . l:atom, 'bufnr': a:buf, 'all': v:true})
+      call prop_remove({'type': 'agda_atom_' . l:atom, 'bufnr': a:buf, 'all': v:true})
     endfor
     call setqflist([], 'f')
   endif
@@ -86,7 +86,7 @@ endfunction
 
 function s:init(buf)
   for l:atom in s:atoms_all
-    let l:type = 'agda_' . l:atom
+    let l:type = 'agda_atom_' . l:atom
     call prop_type_add(l:type, {'highlight': l:type, 'bufnr': a:buf, 'combine': 1})
   endfor
 endfunction
