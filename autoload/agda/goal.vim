@@ -79,7 +79,7 @@ function agda#goal#get_all(buf)
 
   let l:lines = getbufline(a:buf, 1, '$')
 
-  let l:in_comment = 0
+  let l:in_comment = v:false
   let l:goals = []
   let l:stack = []
   let l:lnum = 0
@@ -100,10 +100,10 @@ function agda#goal#get_all(buf)
       if l:match == '--'
         let l:off = l:len
       elseif l:match == '{-'
-        let l:in_comment = 1
+        let l:in_comment = v:true
         let l:off = l:end
       elseif l:match == '-}'
-        let l:in_comment = 0
+        let l:in_comment = v:false
         let l:off = l:end
       elseif l:match == '{!'
         call add(l:stack, [l:lnum, l:start + 1])

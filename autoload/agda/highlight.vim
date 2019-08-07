@@ -1,7 +1,7 @@
 function agda#highlight#highlight(buf, items)
-  if !getbufvar(a:buf, 'agda_highlight_inited', 0)
+  if !getbufvar(a:buf, 'agda_highlight_inited', v:false)
     call s:init(a:buf)
-    call setbufvar(a:buf, 'agda_highlight_inited', 1)
+    call setbufvar(a:buf, 'agda_highlight_inited', v:true)
   endif
 
   let l:lines = getbufline(a:buf, 1, '$')
@@ -21,7 +21,7 @@ function agda#highlight#highlight(buf, items)
 endfunction
 
 function agda#highlight#clear(buf)
-  if getbufvar(a:buf, 'agda_highlight_inited', 0)
+  if getbufvar(a:buf, 'agda_highlight_inited', v:false)
     for l:atom in s:atoms_all
       call prop_remove({'type': 'agda_' . l:atom, 'bufnr': a:buf, 'all': v:true})
     endfor
