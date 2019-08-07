@@ -153,7 +153,7 @@ function s:handler.HighlightingInfo(ctx, msg)
 
       if !l:inited
         let l:lines = getbufline(l:buf, 1, '$')
-        let l:line_starts = s:line_starts(l:lines)
+        let l:state = s:chars2pos_init(l:lines)
         let l:inited = 1
       endif
 
@@ -163,8 +163,7 @@ function s:handler.HighlightingInfo(ctx, msg)
         let l:text = l:atom
       endif
 
-      let l:start = l:item.range[0]
-      let [l:lnum, l:col] = s:chars2pos(l:lines, l:line_starts, l:start)
+      let [l:lnum, l:col] = s:chars2pos(l:item.range[0], l:state)
       call setqflist([{
         \ 'bufnr': l:buf,
         \ 'lnum': l:lnum,
@@ -177,27 +176,26 @@ function s:handler.HighlightingInfo(ctx, msg)
   endfor
 endfunction
 
-function s:line_starts(lines)
+function s:chars2pos_init(lines)
   let l:line_starts = []
   let l:acc = 1
   for l:line in a:lines
     call add(l:line_starts, l:acc)
     let acc += strchars(l:line) + 1
   endfor
-  return l:line_starts
+  let l:lnum = 1
+  return [a:lines, l:line_starts, l:lnum]
 endfunction
 
-function s:chars2pos(lines, line_starts, chars)
-  let l:lnum = 0
-  for l:line_start in a:line_starts
-    if l:line_start > a:chars
-      break
-    else
-      let l:lnum += 1
-    endif
-  endfor
-  let l:charcol = a:chars - a:line_starts[l:lnum - 1] + 1
-  let l:col = strlen(strcharpart(a:lines[l:lnum - 1], 0, l:charcol))
+function s:chars2pos(chars, state)
+  let [l:lines, l:line_starts, l:lnum] = a:state
+  let l:len = len(l:lines)
+  while l:lnum < l:len && l:line_starts[l:lnum] < a:chars
+    let l:lnum += 1
+  endwhile
+  let l:charcol = a:chars - l:line_starts[l:lnum - 1] + 1
+  let l:col = strlen(strcharpart(l:lines[l:lnum - 1], 0, l:charcol))
+  let a:state[2] = l:lnum
   return [l:lnum, l:col]
 endfunction
 
