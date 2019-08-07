@@ -1,5 +1,5 @@
 function s:map(key, cmd, arg='')
-  execute 'nnoremap <buffer><silent> <plug>(agda-maps)' . a:key . ' :call agda#' . a:cmd . '(' . a:arg . ')<cr>'
+  execute 'nnoremap <buffer><silent> <localleader>' . a:key . ' :call agda#' . a:cmd . '(' . a:arg . ')<cr>'
 endfunction
 
 function s:map_u(key, cmd, options)
@@ -38,7 +38,6 @@ call s:map_normalise('z', 'search_about_toplevel')
 call s:map_normalise('o', 'show_module_contents_maybe_toplevel')
 call s:map_u('n', 'compute_maybe_toplevel', ['DefaultCompute', 'IgnoreAbstract'])
 
-nmap <buffer><silent> <LocalLeader> <plug>(agda-maps)
 nnoremap <buffer><silent> ]g :call agda#goal#go_next()<cr>
 nnoremap <buffer><silent> [g :call agda#goal#go_prev()<cr>
 
