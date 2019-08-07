@@ -8,9 +8,4 @@ nmap <buffer> <LocalLeader> <plug>(agda-maps)
 nnoremap <buffer> ]g :call agda#goal#go_next()<cr>
 nnoremap <buffer> [g :call agda#goal#go_prev()<cr>
 
-augroup AgdaPlugin
-  autocmd! * <buffer>
-  autocmd BufEnter <buffer> call agda#reload_syntax()
-augroup END
-
 call agda#load()
