@@ -25,11 +25,13 @@ endfunction
 
 " commands
 function agda#load()
+  update
   call s:send_command(
     \ ['Cmd_load', json_encode(expand('%')), '[]'])
 endfunction
 
 function agda#compile()
+  update
   call s:send_command(
     \ ['Cmd_compile', 'MAlonzo', json_encode(expand('%')), '[]'])
 endfunction
@@ -222,8 +224,6 @@ function s:goal_command(cmd, ...)
 endfunction
 
 function s:send_command(cmd)
-  silent update
-
   let l:args = [
     \ 'IOTCM',
     \ json_encode(expand('%')),

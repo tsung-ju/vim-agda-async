@@ -15,8 +15,8 @@ For example, `<LocalLeader>um` `<LocalLeader>uum`
 
 | Binding                | Local | Global | Accepts Prefix | Description |
 | ---------------------- | ----- | ------ | -------------- | ----------- |
-| \<LocalLeader>l        |       | v      |                | Load |
-| \<LocalLeader>xc       |       | v      |                | Compile |
+| \<LocalLeader>l        |       | v      |                | Save the file and Load |
+| \<LocalLeader>xc       |       | v      |                | Save the file and Compile |
 | \<LocalLeader>xr       |       | v      |                | Kill and restart Agda |
 | \<LocalLeader>xa       |       | v      |                | Abort a command |
 | \<LocalLeader>xh       |       | v      |                | Toggle display of hidden arguments |
