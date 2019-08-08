@@ -1,3 +1,5 @@
+call agda#input#activate()
+
 function s:map(key, cmd, arg='')
   execute 'nnoremap <buffer><silent> <localleader>' . a:key . ' :call agda#' . a:cmd . '(' . a:arg . ')<cr>'
 endfunction
