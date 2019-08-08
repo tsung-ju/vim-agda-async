@@ -43,3 +43,6 @@ For example, `<LocalLeader>um` `<LocalLeader>uum`
 | \<LocalLeader>z        | v     | v      | `u` `uu`       | Search About |
 | \<LocalLeader>o        | v     | v      | `u` `uu`       | Module contents |
 | \<LocalLeader>n        | v     | v      | `u`            | Evaluate term to normal form |
+
+## Unicode input method
+The mapping are the same as in Emacs.
