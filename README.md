@@ -45,4 +45,8 @@ For example, `<LocalLeader>um` `<LocalLeader>uum`
 | \<LocalLeader>n        | v     | v      | `u`            | Evaluate term to normal form |
 
 ## Unicode input method
+
 The mapping are the same as in Emacs.
+
+![agda-input](https://user-images.githubusercontent.com/16625236/62736569-2fc88880-ba1d-11e9-9ee1-c9240577131b.gif)
+
