@@ -1,3 +1,23 @@
+" Copied from https://github.com/derekelkins/agda-vim/blob/master/syntax/agda.vim
+syn match   agdaCharCode     contained "\\\([0-9]\+\|o[0-7]\+\|x[0-9a-fA-F]\+\|[\"\\'&\\abfnrtv]\|^[A-Z^_\[\\\]]\)"
+syn match   agdaCharCode     contained "\v\\(NUL|SOH|STX|ETX|EOT|ENQ|ACK|BEL|BS|HT|LF|VT|FF|CR|SO|SI|DLE|DC1|DC2|DC3|DC4|NAK|SYN|ETB|CAN|EM|SUB|ESC|FS|GS|RS|US|SP|DEL)"
+syn region  agdaString       start=+"+ skip=+\\\\\|\\"+ end=+"+ contains=agdaCharCode
+syn match   agdaHole         "\v(^|\s|[.(){};])@<=(\?)($|\s|[.(){};])@="
+syn region  agdaX            matchgroup=agdaHole start="{!" end="!}" contains=ALL
+syn match   agdaLineComment  "\v(^|\s|[.(){};])@<=--.*$" contains=@agdaInComment
+syn region  agdaBlockComment start="{-"  end="-}" contains=agdaBlockComment,@agdaInComment
+syn region  agdaPragma       start="{-#" end="#-}"
+syn cluster agdaInComment    contains=agdaTODO,agdaFIXME,agdaXXX
+syn keyword agdaTODO         contained TODO
+syn keyword agdaFIXME        contained FIXME
+syn keyword agdaXXX          contained XXX
+
+hi def link agdaHole WarningMsg
+hi def      agdaTODO             cterm=bold,underline ctermfg=2 " green
+hi def      agdaFIXME            cterm=bold,underline ctermfg=3 " yellow
+hi def      agdaXXX cterm=bold,underline ctermfg=1 " red
+
+
 hi def link agda_atom_keyword Keyword
 hi def link agda_atom_comment Comment
 hi def link agda_atom_background Comment
