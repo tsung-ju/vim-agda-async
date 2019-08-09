@@ -36,7 +36,7 @@ For example, `<LocalLeader>um` `<LocalLeader>uum`
 | \<LocalLeader>e        | v     |        | `u` `uu` | Context environment |
 | \<LocalLeader>h        | v     |        | `u` `uu` | Helper function type |
 | \<LocalLeader>d        | v     | v      | `u` `uu` | Infer deduce type |
-| \<LocalLeader>w        | v     | v      | `u` `uu` | Explain why a particular name is in scope |
+| \<LocalLeader>w        | v     | v      |          | Explain why a particular name is in scope |
 | \<LocalLeader>,        | v     |        | `u` `uu` | Goal type and context |
 | \<LocalLeader>.        | v     |        | `u` `uu` | Goal type, context and inferred type |
 | \<LocalLeader>;        | v     |        | `u` `uu` | Goal type, context and checked type |
