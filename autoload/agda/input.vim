@@ -22,10 +22,9 @@ let s:state = {'started': v:false}
 function s:start()
   call s:commit()
 
-  let [l:lnum, l:col] = getcurpos()[1:2]
   let l:popup = popup_create('', {
-    \ 'line': l:lnum + 1,
-    \ 'col': l:col,
+    \ 'line': 'cursor+1',
+    \ 'col': 'cursor',
     \ 'wrap': v:false,
     \ 'hidden': v:true,
     \ 'cursorline': 1,
@@ -34,6 +33,7 @@ function s:start()
     \ 'filter': function('s:popup_filter'),
   \ })
 
+  let [l:lnum, l:col] = getcurpos()[1:2]
   let s:state = {
     \ 'started': v:true,
     \ 'lnum': l:lnum,
