@@ -48,5 +48,4 @@ For example, `<LocalLeader>um` `<LocalLeader>uum`
 
 The mappings are the same as in Emacs.
 
-![agda-input](https://user-images.githubusercontent.com/16625236/62736569-2fc88880-ba1d-11e9-9ee1-c9240577131b.gif)
-
+![agda-input](https://user-images.githubusercontent.com/16625236/62801703-d708f680-bad5-11e9-928f-65b449902709.gif)
