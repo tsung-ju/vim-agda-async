@@ -58,15 +58,31 @@ endfunction
 
 function agda#goal#set_body(buf, goal, body)
   let [l:type, l:start, l:end] = a:goal
-  let l:body = substitute(a:body, s:pat_pre . '?' . s:pat_post, '{! !}', 'g')
+  let l:body = s:replace_question_mark(a:body)
   let l:lines = split(l:body, "\n")
-  let l:prefix = getline(l:start[0])[:l:start[1] - 2]
-  let l:suffix = getline(l:end[0])[l:end[1]:]
+  let l:prefix = getbufline(a:buf, l:start[0])[0][:l:start[1] - 2]
+  let l:suffix = getbufline(a:buf, l:end[0])[0][l:end[1]:]
   let l:lines[0] = l:prefix . l:lines[0]
   let l:lines[-1] = l:lines[-1] . l:suffix
+  call s:replace_lines(a:buf, l:start[0], l:end[0], l:lines)
+endfunction
+
+function agda#goal#make_case(buf, goal, clauses)
+  let [l:type, l:start, l:end] = a:goal
+  let l:indent = matchstr(getbufline(a:buf, l:start[0])[0], '^[ \t]*')
+  call map(a:clauses, {i, clause ->
+    \ l:indent . s:replace_question_mark(clause)})
+  call s:replace_lines(a:buf, l:start[0], l:end[0], a:clauses)
+endfunction
+
+function s:replace_question_mark(text)
+  return substitute(a:text, s:pat_pre . '?' . s:pat_post, '{! !}', 'g')
+endfunction
+
+function s:replace_lines(buf, start, end, lines)
   let l:view = winsaveview()
-  call deletebufline(a:buf, l:start[0], l:end[0])
-  call appendbufline(a:buf, l:start[0] - 1, l:lines)
+  call deletebufline(a:buf, a:start, a:end)
+  call appendbufline(a:buf, a:start - 1, a:lines)
   call winrestview(l:view)
 endfunction
 

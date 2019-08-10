@@ -274,3 +274,11 @@ function s:handler.GiveAction(ctx, msg)
     call agda#goal#set_body(a:ctx.buf, l:goal, a:msg.giveResult)
   endif
 endfunction
+
+function s:handler.MakeCase(ctx, msg)
+  let l:goal_index = index(a:ctx.interaction_points, a:msg.interactionPoint)
+  if l:goal_index != -1
+    let l:goal = agda#goal#get_all(a:ctx.buf)[l:goal_index]
+    call agda#goal#make_case(a:ctx.buf, l:goal, a:msg.clauses)
+  endif
+endfunction
