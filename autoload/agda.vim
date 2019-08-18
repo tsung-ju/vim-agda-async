@@ -64,13 +64,13 @@ endfunction
 function agda#show_module_contents_toplevel(rewrite)
   let l:module_name = input('Module name: ')
   call s:send_command(
-    \ ['Cmd_show_module_contents', a:rewrite, l:module_name])
+    \ ['Cmd_show_module_contents_toplevel', a:rewrite, l:module_name])
 endfunction
 
 function agda#search_about_toplevel(rewrite)
   let l:name = input('Name: ')
   call s:send_command(
-    \ ['Cmd_search_about', a:rewrite, l:name])
+    \ ['Cmd_search_about_toplevel', a:rewrite, l:name])
 endfunction
 
 function agda#solveAll(rewrite)
