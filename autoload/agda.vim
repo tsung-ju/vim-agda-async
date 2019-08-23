@@ -40,6 +40,13 @@ function agda#restart()
   call agda#stop()
 endfunction
 
+function s:get_ctx()
+  if !exists('b:agda_ctx')
+    call agda_start()
+  endif
+  return b:agda_ctx
+endfunction
+
 " commands
 function agda#load()
   update
@@ -223,7 +230,7 @@ function s:goal_command(cmd, ...)
   let l:goals = agda#goal#get_all(bufnr('%'))
   let l:goal_index = agda#goal#find_current(l:goals)
   if l:goal_index != -1
-    let l:goal_name = b:agda_ctx.interaction_points[l:goal_index]
+    let l:goal_name = s:get_ctx().interaction_points[l:goal_index]
     let l:goal_body = agda#goal#get_body(goals[l:goal_index])
     call s:send_command(a:cmd + [
       \ l:goal_name,
@@ -248,9 +255,7 @@ function s:send_command(cmd)
     \ 'Direct',
     \ '(' . join(a:cmd) . ')' ]
 
-  call agda#start()
-
-  call ch_sendraw(b:agda_ctx.ch, join(l:args) . "\n")
+  call ch_sendraw(s:get_ctx().ch, join(l:args) . "\n")
 endfunction
 
 
