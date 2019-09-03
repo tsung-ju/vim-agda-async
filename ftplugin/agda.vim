@@ -24,7 +24,7 @@ endfunction
 function s:map_u(key, cmd, options)
   for l:count in range(len(a:options))
     let l:key = repeat('u', l:count) . a:key
-    call s:map(l:key, a:cmd, "'" . a:options[l:count] . "'")
+    call s:map(l:key, a:cmd, string(a:options[l:count]))
   endfor
 endfunction
 
