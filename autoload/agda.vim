@@ -36,13 +36,13 @@ function agda#stop()
 endfunction
 
 function agda#restart()
-  call agda#start()
   call agda#stop()
+  call agda#start()
 endfunction
 
 function s:get_ctx()
   if !exists('b:agda_ctx')
-    call agda_start()
+    call agda#start()
   endif
   return b:agda_ctx
 endfunction
