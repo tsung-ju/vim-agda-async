@@ -19,7 +19,7 @@ function agda#start()
   if !exists('b:agda_ctx')
     let l:ctx = {}
     let l:ctx.buf = bufnr('%')
-    let l:ctx.interaction_points = []
+    let l:ctx.interaction_point_ids = []
     let l:ctx.job = job_start(
       \ ['agda', '--interaction-json'],
       \ {'out_cb': function('s:handle_response', [l:ctx])})
@@ -230,7 +230,7 @@ function s:goal_command(cmd, ...)
   let l:goals = agda#goal#get_all(bufnr('%'))
   let l:goal_index = agda#goal#find_current(l:goals)
   if l:goal_index != -1
-    let l:goal_name = s:get_ctx().interaction_points[l:goal_index]
+    let l:goal_name = s:get_ctx().interaction_point_ids[l:goal_index]
     let l:goal_body = agda#goal#get_body(goals[l:goal_index])
     call s:send_command(a:cmd + [
       \ l:goal_name,
@@ -282,7 +282,8 @@ function s:handler.ClearHighlighting(ctx, msg)
 endfunction
 
 function s:handler.InteractionPoints(ctx, msg)
-  let a:ctx.interaction_points = a:msg.interactionPoints
+  call map(a:msg.interactionPoints, { key, val -> val.id })
+  let a:ctx.interaction_point_ids = a:msg.interactionPoints
 endfunction
 
 function s:handler.HighlightingInfo(ctx, msg)
@@ -290,15 +291,15 @@ function s:handler.HighlightingInfo(ctx, msg)
 endfunction
 
 function s:handler.GiveAction(ctx, msg)
-  let l:goal_index = index(a:ctx.interaction_points, a:msg.interactionPoint)
+  let l:goal_index = index(a:ctx.interaction_point_ids, a:msg.interactionPoint.id)
   if l:goal_index != -1
     let l:goal = agda#goal#get_all(a:ctx.buf)[l:goal_index]
-    call agda#goal#set_body(a:ctx.buf, l:goal, a:msg.giveResult)
+    call agda#goal#set_body(a:ctx.buf, l:goal, a:msg.giveResult.str)
   endif
 endfunction
 
 function s:handler.MakeCase(ctx, msg)
-  let l:goal_index = index(a:ctx.interaction_points, a:msg.interactionPoint)
+  let l:goal_index = index(a:ctx.interaction_point_ids, a:msg.interactionPoint.id)
   if l:goal_index != -1
     let l:goal = agda#goal#get_all(a:ctx.buf)[l:goal_index]
     call agda#goal#make_case(a:ctx.buf, l:goal, a:msg.clauses)
