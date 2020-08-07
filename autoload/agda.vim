@@ -305,3 +305,66 @@ function s:handler.MakeCase(ctx, msg)
     call agda#goal#make_case(a:ctx.buf, l:goal, a:msg.clauses)
   endif
 endfunction
+
+function s:handler.DisplayInfo(ctx, msg)
+  let l:info = a:msg.info
+
+  if l:info.kind ==# 'Error'
+    call s:show_preview(split(l:info.message, "\n"))
+    echohl None
+  elseif l:info.kind ==# 'AllGoalsWarnings'
+    call map(l:info.visibleGoals, { key, val -> s:pretty_constraint(val) })	
+    let l:goals = l:info.visibleGoals
+    let l:warnings = ['', "Warnings"] + split(l:info.warnings, "\n")
+    let l:errors = ['', "Errors"] + split(l:info.errors, "\n")
+    call s:show_preview(l:goals + l:warnings + l:errors)
+  elseif l:info.kind ==# 'Context'
+    call map(l:info.context, { key, val -> s:pretty_context_entry(val) })
+    call s:show_preview(l:info.context)
+  elseif l:info.kind ==# 'GoalSpecific'
+    call s:show_preview(s:pretty_goal_info(l:info.goalInfo))
+  else
+    call s:show_preview(string(l:info))
+  endif
+endfunction
+
+function s:pretty_constraint(constraint)
+  if a:constraint.kind ==# 'OfType'
+    return '?' . a:constraint.constraintObj . ' : ' . a:constraint.type
+  else
+    return string(a:constraint)
+  endif
+endfunction
+
+function s:pretty_context_entry(entry)
+  if a:entry.inScope && a:entry.originalName !=# a:entry.reifiedName
+    let l:name = a:entry.originalName . ' = ' . a:entry.reifiedName
+  else
+    let l:name = a:entry.reifiedName
+  endif
+
+  if !a:entry.inScope
+    let l:attributes = '   (not in scope)'
+  else
+    let l:attributes = ''
+  endif
+
+  return l:name . ' : ' . a:entry.binding . l:attributes
+endfunction
+
+function s:pretty_goal_info(goal_info)
+  if a:goal_info.kind ==# 'GoalType'
+     let l:context = a:goal_info.entries
+     call map(l:context, { key, val -> s:pretty_context_entry(val) })
+     return ['Goal : ' . a:goal_info.type, repeat('-', 80)] + l:context
+endfunction
+
+function s:show_preview(lines)
+  silent! belowright noswapfile pedit! \*All\ Goals\*
+  wincmd P
+  setlocal buftype=nofile nobuflisted bufhidden=wipe nonumber norelativenumber signcolumn=no modifiable
+  call setline(1, a:lines)
+  setlocal nomodified nomodifiable
+  resize 7
+  wincmd p
+endfunction
