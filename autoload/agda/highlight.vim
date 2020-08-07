@@ -119,6 +119,7 @@ let s:atoms_all = [
   \ 'primitivetype',
   \ 'bound',
   \ 'generalizable',
+  \ 'argument',
   \ 'inductiveconstructor',
   \ 'coinductiveconstructor',
   \ 'datatype',
@@ -142,6 +143,7 @@ let s:atoms_all = [
   \ 'incompletepattern',
   \ 'catchallclause',
   \ 'confluenceproblem',
+  \ 'missingdefinition',
   \ 'typechecks',
 \ ]
 
@@ -156,4 +158,5 @@ let s:atoms_error = [
   \ 'incompletepattern',
   \ 'catchallclause',
   \ 'confluenceproblem',
+  \ 'missingdefinition',
 \ ]

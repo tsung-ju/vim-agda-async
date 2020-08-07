@@ -43,6 +43,7 @@ hi def link agda_atom_string String
 hi def link agda_atom_number Number
 hi def link agda_atom_symbol Special
 hi def link agda_atom_primitivetype Type
+hi def link agda_atom_argument Identifier
 hi def link agda_atom_bound Identifier
 hi def link agda_atom_generalizable Identifier
 hi def link agda_atom_inductiveconstructor Normal
@@ -68,4 +69,5 @@ hi def link agda_atom_positivityproblem Underlined
 hi def link agda_atom_incompletepattern Underlined
 hi def link agda_atom_catchallclause Underlined
 hi def link agda_atom_confluenceproblem Underlined
+hi def link agda_atom_missingdefinition Underlined
 hi def link agda_atom_typechecks Normal
