@@ -31,7 +31,7 @@ function agda#input#activate()
 endfunction
 
 function agda#input#map(source, targets)
-  call s:trie_add('\' . source, targets)
+  call s:trie_add('\' . a:source, a:targets)
 endfunction
 
 let s:state = {'started': v:false}
