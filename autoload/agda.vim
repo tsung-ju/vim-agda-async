@@ -357,6 +357,7 @@ function s:pretty_goal_info(goal_info)
      let l:context = a:goal_info.entries
      call map(l:context, { key, val -> s:pretty_context_entry(val) })
      return ['Goal : ' . a:goal_info.type, repeat('-', 80)] + l:context
+  endif
 endfunction
 
 function s:show_preview(lines)
