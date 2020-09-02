@@ -90,7 +90,7 @@ function s:update()
   call s:update_highlight(s:state, l:col)
   call s:update_popup(s:state)
 
-  if empty(l:children)
+  if l:match !=# l:text && empty(l:children)
     return s:commit()
   endif
 endfunction
