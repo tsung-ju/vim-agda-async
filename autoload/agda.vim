@@ -69,13 +69,13 @@ function agda#metas()
 endfunction
 
 function agda#show_module_contents_toplevel(rewrite)
-  let l:module_name = input('Module name: ')
+  let l:module_name = '"' . input('Module name: ') . '"'
   call s:send_command(
     \ ['Cmd_show_module_contents_toplevel', a:rewrite, l:module_name])
 endfunction
 
 function agda#search_about_toplevel(rewrite)
-  let l:name = input('Name: ')
+  let l:name = '"' . input('Name: ') . '"'
   call s:send_command(
     \ ['Cmd_search_about_toplevel', a:rewrite, l:name])
 endfunction
@@ -89,19 +89,19 @@ function agda#autoAll()
 endfunction
 
 function agda#infer_toplevel(rewrite)
-  let l:expression = input('Expression: ')
+  let l:expression = '"' . input('Expression: ') . '"'
   call s:send_command(
     \ ['Cmd_infer_toplevel', a:rewrite, l:expression])
 endfunction
 
 function agda#compute_toplevel(compute_mode)
-  let l:expression = input('Expression: ')
+  let l:expression = '"' . input('Expression: ') . '"'
   call s:send_command(
     \ ['Cmd_compute_toplevel', a:compute_mode, l:expression])
 endfunction
 
 function agda#why_in_scope_toplevel()
-  let l:name = input('Name: ')
+  let l:name = '"' . input('Name: ') . '"'
   call s:send_command(
     \ ['Cmd_why_in_scope_toplevel', l:name])
 endfunction
