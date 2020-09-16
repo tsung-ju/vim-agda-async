@@ -69,13 +69,13 @@ function agda#metas()
 endfunction
 
 function agda#show_module_contents_toplevel(rewrite)
-  let l:module_name = input('Module name: ')
+  let l:module_name = '"' . input('Module name: ') . '"'
   call s:send_command(
     \ ['Cmd_show_module_contents_toplevel', a:rewrite, l:module_name])
 endfunction
 
 function agda#search_about_toplevel(rewrite)
-  let l:name = input('Name: ')
+  let l:name = '"' . input('Name: ') . '"'
   call s:send_command(
     \ ['Cmd_search_about_toplevel', a:rewrite, l:name])
 endfunction
@@ -89,19 +89,19 @@ function agda#autoAll()
 endfunction
 
 function agda#infer_toplevel(rewrite)
-  let l:expression = input('Expression: ')
+  let l:expression = '"' . input('Expression: ') . '"'
   call s:send_command(
     \ ['Cmd_infer_toplevel', a:rewrite, l:expression])
 endfunction
 
 function agda#compute_toplevel(compute_mode)
-  let l:expression = input('Expression: ')
+  let l:expression = '"' . input('Expression: ') . '"'
   call s:send_command(
     \ ['Cmd_compute_toplevel', a:compute_mode, l:expression])
 endfunction
 
 function agda#why_in_scope_toplevel()
-  let l:name = input('Name: ')
+  let l:name = '"' . input('Name: ') . '"'
   call s:send_command(
     \ ['Cmd_why_in_scope_toplevel', l:name])
 endfunction
@@ -195,7 +195,7 @@ endfunction
 function agda#solve_maybe_all(rewrite)
   call s:goal_command(
     \ ['Cmd_solveOne', a:rewrite],
-    \ function('agda#solveAll', a:rewrite))
+    \ function('agda#solveAll', [a:rewrite]))
 endfunction
 
 function agda#auto_maybe_all()
@@ -205,7 +205,7 @@ endfunction
 function agda#infer_maybe_toplevel(rewrite)
   call s:goal_command(
     \ ['Cmd_infer', a:rewrite],
-    \ function('agda#infer_toplevel', a:rewrite))
+    \ function('agda#infer_toplevel', [a:rewrite]))
 endfunction
 
 function agda#why_in_scope_maybe_toplevel()
@@ -217,13 +217,13 @@ endfunction
 function agda#show_module_contents_maybe_toplevel(rewrite)
   call s:goal_command(
     \ ['Cmd_show_module_contents', a:rewrite],
-    \ function('agda#show_module_contents_toplevel', a:rewrite))
+    \ function('agda#show_module_contents_toplevel', [a:rewrite]))
 endfunction
 
 function agda#compute_maybe_toplevel(compute_mode)
   call s:goal_command(
     \ ['Cmd_compute', a:compute_mode],
-    \ function('agda#compute_toplevel', a:compute_mode))
+    \ function('agda#compute_toplevel', [a:compute_mode]))
 endfunction
 
 function s:goal_command(cmd, ...)
