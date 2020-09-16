@@ -51,13 +51,13 @@ endfunction
 function agda#load()
   update
   call s:send_command(
-    \ ['Cmd_load', json_encode(expand('%')), '[]'])
+    \ ['Cmd_load', s:encode_haskell_string(expand('%')), '[]'])
 endfunction
 
 function agda#compile()
   update
   call s:send_command(
-    \ ['Cmd_compile', 'MAlonzo', json_encode(expand('%')), '[]'])
+    \ ['Cmd_compile', 'MAlonzo', s:encode_haskell_string(expand('%')), '[]'])
 endfunction
 
 function agda#constraints()
@@ -69,13 +69,13 @@ function agda#metas()
 endfunction
 
 function agda#show_module_contents_toplevel(rewrite)
-  let l:module_name = '"' . input('Module name: ') . '"'
+  let l:module_name = s:encode_haskell_string(input('Module name: '))
   call s:send_command(
     \ ['Cmd_show_module_contents_toplevel', a:rewrite, l:module_name])
 endfunction
 
 function agda#search_about_toplevel(rewrite)
-  let l:name = '"' . input('Name: ') . '"'
+  let l:name = s:encode_haskell_string(input('Name: '))
   call s:send_command(
     \ ['Cmd_search_about_toplevel', a:rewrite, l:name])
 endfunction
@@ -89,19 +89,19 @@ function agda#autoAll()
 endfunction
 
 function agda#infer_toplevel(rewrite)
-  let l:expression = '"' . input('Expression: ') . '"'
+  let l:expression = s:encode_haskell_string(input('Expression: '))
   call s:send_command(
     \ ['Cmd_infer_toplevel', a:rewrite, l:expression])
 endfunction
 
 function agda#compute_toplevel(compute_mode)
-  let l:expression = '"' . input('Expression: ') . '"'
+  let l:expression = s:encode_haskell_string(input('Expression: '))
   call s:send_command(
     \ ['Cmd_compute_toplevel', a:compute_mode, l:expression])
 endfunction
 
 function agda#why_in_scope_toplevel()
-  let l:name = '"' . input('Name: ') . '"'
+  let l:name = s:encode_haskell_string(input('Name: '))
   call s:send_command(
     \ ['Cmd_why_in_scope_toplevel', l:name])
 endfunction
@@ -235,7 +235,7 @@ function s:goal_command(cmd, ...)
     call s:send_command(a:cmd + [
       \ l:goal_name,
       \ 'noRange',
-      \ json_encode(l:goal_body)
+      \ s:encode_haskell_string(l:goal_body)
     \ ])
   elseif a:0 > 0
     " call the second argument if not in a goal
@@ -250,12 +250,16 @@ endfunction
 function s:send_command(cmd)
   let l:args = [
     \ 'IOTCM',
-    \ json_encode(expand('%')),
+    \ s:encode_haskell_string(expand('%')),
     \ 'NonInteractive',
     \ 'Direct',
     \ '(' . join(a:cmd) . ')' ]
 
   call ch_sendraw(s:get_ctx().ch, join(l:args) . "\n")
+endfunction
+
+function s:encode_haskell_string(str)
+  return '"' . substitute(a:str, '.', {c -> '\' . char2nr(c[0], v:true)}, 'g') . '"'
 endfunction
 
 
