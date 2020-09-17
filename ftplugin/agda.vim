@@ -15,7 +15,15 @@
 " You should have received a copy of the GNU General Public License
 " along with vim-agda-async.  If not, see <https://www.gnu.org/licenses/>.
 
-call agda#input#activate()
+let s:agda_autoload = get(g:, 'agda_autoload', v:true)
+
+let s:agda_input_enable = get(g:, 'agda_input_enable', v:true)
+let s:agda_input_mappings = get(g:, 'agda_input_mappings', {})
+
+if s:agda_input_enable
+  call agda#input#activate()
+  map(s:agda_input_mappings, { k, v -> agda#input#map(l:key, l:value) })
+endif
 
 function s:map(key, cmd, arg='')
   execute 'nnoremap <buffer><silent> <localleader>' . a:key . ' :call agda#' . a:cmd . '(' . a:arg . ')<cr>'
@@ -62,4 +70,6 @@ call s:map_u('n', 'compute_maybe_toplevel', ['DefaultCompute', 'IgnoreAbstract']
 nnoremap <buffer><silent> ]g :call agda#goal#go_next()<cr>
 nnoremap <buffer><silent> [g :call agda#goal#go_prev()<cr>
 
-call agda#load()
+if s:agda_autoload
+  call agda#load()
+endif
