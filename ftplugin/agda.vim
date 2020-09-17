@@ -20,10 +20,56 @@ let s:agda_autoload = get(g:, 'agda_autoload', v:true)
 let s:agda_input_enable = get(g:, 'agda_input_enable', v:true)
 let s:agda_input_mappings = get(g:, 'agda_input_mappings', {})
 
-if s:agda_input_enable
+function s:init()
+  if s:agda_input_enable
+    call s:init_agda_input()
+  endif
+
+  call s:init_mappings()
+
+  if s:agda_autoload
+    call agda#load()
+  endif
+endfunction
+
+function s:init_agda_input()
   call agda#input#activate()
-  map(s:agda_input_mappings, { k, v -> agda#input#map(l:key, l:value) })
-endif
+  for [l:key, l:val] in items(s:agda_input_mappings)
+    call agda#input#map(l:key, l:val)
+  endfor
+endfunction
+
+function s:init_mappings()
+  call s:map('l', 'load')
+  call s:map('xc', 'compile')
+  call s:map('xr', 'restart')
+  call s:map('xa', 'abort')
+  call s:map('xh', 'toggle_implicit_args')
+  call s:map('=', 'constraints')
+  call s:map('?', 'metas')
+  call s:map('f', 'goal#go_next()')
+  call s:map('b', 'goal#go_prev()')
+
+  call s:map_u('<space>', 'give', ['WithoutForce', 'WithForce'])
+  call s:map_normalise('m', 'elaborate_give')
+  call s:map_u('r', 'refine_or_intro', ['False', 'True'])
+  call s:map('a', 'auto_maybe_all')
+  call s:map('c', 'make_case')
+  call s:map_normalise('t', 'goal_type')
+  call s:map_normalise('e', 'context')
+  call s:map_normalise('h', 'helper_function')
+  call s:map_normalise('d', 'infer_maybe_toplevel')
+  call s:map('w', 'why_in_scope_maybe_toplevel')
+  call s:map_normalise(',', 'goal_type_context')
+  call s:map_normalise('.', 'goal_type_context_infer')
+  call s:map_normalise(';', 'goal_type_context_check')
+  call s:map_normalise('z', 'search_about_toplevel')
+  call s:map_normalise('o', 'show_module_contents_maybe_toplevel')
+  call s:map_u('n', 'compute_maybe_toplevel', ['DefaultCompute', 'IgnoreAbstract'])
+
+  nnoremap <buffer><silent> ]g :call agda#goal#go_next()<cr>
+  nnoremap <buffer><silent> [g :call agda#goal#go_prev()<cr>
+endfunction
 
 function s:map(key, cmd, arg='')
   execute 'nnoremap <buffer><silent> <localleader>' . a:key . ' :call agda#' . a:cmd . '(' . a:arg . ')<cr>'
@@ -40,36 +86,4 @@ function s:map_normalise(key, cmd)
   call s:map_u(a:key, a:cmd, ['Simplified', 'Instantiated', 'Normalised'])
 endfunction
 
-call s:map('l', 'load')
-call s:map('xc', 'compile')
-call s:map('xr', 'restart')
-call s:map('xa', 'abort')
-call s:map('xh', 'toggle_implicit_args')
-call s:map('=', 'constraints')
-call s:map('?', 'metas')
-call s:map('f', 'goal#go_next()')
-call s:map('b', 'goal#go_prev()')
-
-call s:map_u('<space>', 'give', ['WithoutForce', 'WithForce'])
-call s:map_normalise('m', 'elaborate_give')
-call s:map_u('r', 'refine_or_intro', ['False', 'True'])
-call s:map('a', 'auto_maybe_all')
-call s:map('c', 'make_case')
-call s:map_normalise('t', 'goal_type')
-call s:map_normalise('e', 'context')
-call s:map_normalise('h', 'helper_function')
-call s:map_normalise('d', 'infer_maybe_toplevel')
-call s:map('w', 'why_in_scope_maybe_toplevel')
-call s:map_normalise(',', 'goal_type_context')
-call s:map_normalise('.', 'goal_type_context_infer')
-call s:map_normalise(';', 'goal_type_context_check')
-call s:map_normalise('z', 'search_about_toplevel')
-call s:map_normalise('o', 'show_module_contents_maybe_toplevel')
-call s:map_u('n', 'compute_maybe_toplevel', ['DefaultCompute', 'IgnoreAbstract'])
-
-nnoremap <buffer><silent> ]g :call agda#goal#go_next()<cr>
-nnoremap <buffer><silent> [g :call agda#goal#go_prev()<cr>
-
-if s:agda_autoload
-  call agda#load()
-endif
+call s:init()
