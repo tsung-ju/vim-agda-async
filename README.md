@@ -52,7 +52,7 @@ This feature can be disabled by setting `g:agda_input_enable` to `0`.
 
 The default mappings are the same as in Emacs.
 
-Mappings specified in `g:agda_input_mappings` will be added to the beginning of the candidate list. E.g.
+Additional mappings can be specified via `g:agda_input_mappings`, e.g.
 ```vim
 let g:agda_input_mappings = { '++': '⧺' , ';': ['︔', '؛'] }
 ```
