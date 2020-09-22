@@ -46,6 +46,13 @@ For example, `<LocalLeader>um` `<LocalLeader>uum`
 
 ## Unicode input method
 
-The mappings are the same as in Emacs.
-
 ![agda-input](https://user-images.githubusercontent.com/16625236/62801703-d708f680-bad5-11e9-928f-65b449902709.gif)
+
+The default mappings are the same as in Emacs.
+
+This feature can be disabled by setting `g:agda_input_enable` to `0`
+
+Mappings specified in `g:agda_input_mappings` will be added to the beginning of the candidate list. E.g.
+```vim
+let g:agda_input_mappings = { '++': '⧺' , ';': ['︔', '؛'] }
+```
