@@ -233,7 +233,8 @@ function s:trie_add(key, values)
     endif
     let l:node = l:node[0][l:char]
   endfor
-  call extend(l:node[1], a:values)
+  call filter(l:node[1], {k, v -> index(a:values, v) == -1})
+  call extend(l:node[1], a:values, 0)
 endfunction
 
 function s:trie_match(key)
