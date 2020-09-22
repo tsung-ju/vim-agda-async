@@ -48,9 +48,9 @@ For example, `<LocalLeader>um` `<LocalLeader>uum`
 
 ![agda-input](https://user-images.githubusercontent.com/16625236/62801703-d708f680-bad5-11e9-928f-65b449902709.gif)
 
-The default mappings are the same as in Emacs.
+This feature can be disabled by setting `g:agda_input_enable` to `0`.
 
-This feature can be disabled by setting `g:agda_input_enable` to `0`
+The default mappings are the same as in Emacs.
 
 Mappings specified in `g:agda_input_mappings` will be added to the beginning of the candidate list. E.g.
 ```vim
