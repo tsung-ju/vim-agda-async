@@ -15,4 +15,4 @@
 " You should have received a copy of the GNU General Public License
 " along with vim-agda-async.  If not, see <https://www.gnu.org/licenses/>.
 
-au BufRead,BufNewFile *.agda,*.lagda   setf agda
+autocmd BufRead,BufNewFile *.agda,*.lagda,*.lagda.rst,*.lagda.tex,*.lagda.md,*.lagda.org set filetype=agda
