@@ -57,7 +57,7 @@ hi def link agda_atom_pragma PreProc
 hi def link agda_atom_primitive Normal
 hi def link agda_atom_macro Macro
 hi def link agda_atom_record Type
-hi def link agda_atom_dotted Normal
+hi def link agda_atom_dottedpattern Normal
 hi def link agda_atom_operator Operator
 hi def link agda_atom_error Error
 hi def link agda_atom_unsolvedmeta Underlined
