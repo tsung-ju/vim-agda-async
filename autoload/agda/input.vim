@@ -55,11 +55,10 @@ function s:start()
     \ 'filter': function('s:popup_filter'),
   \ })
 
-  let [l:lnum, l:col] = getcurpos()[1:2]
+  let l:start_pos = getcurpos()[1:2]
   let s:state = {
     \ 'started': v:true,
-    \ 'lnum': l:lnum,
-    \ 'start': l:col,
+    \ 'start_pos': l:start_pos,
     \ 'match': '',
     \ 'choice': 0,
     \ 'candidates': [],
@@ -73,17 +72,18 @@ function s:update()
     return
   endif
 
-  let [l:lnum, l:col] = getcurpos()[1:2]
+  let [l:start_lnum, l:start_col] = s:state.start_pos
+  let [l:end_lnum, l:end_col] = getcurpos()[1:2]
 
-  if l:lnum != s:state.lnum
+  if l:end_lnum != l:start_lnum 
     return s:commit()
   endif
 
-  if l:col <= s:state.start
+  if l:end_col <= l:start_col
     return s:reset()
   endif
 
-  let l:text = s:getline_range(l:lnum, s:state.start, l:col - s:state.start)
+  let l:text = s:getline_range(l:start_lnum, l:start_col, l:end_col - l:start_col)
   let [l:match, l:candidates, l:children] = s:trie_match(l:text)
 
   if l:match !=# s:state.match
@@ -92,7 +92,7 @@ function s:update()
     let s:state.choice = 0
   endif
 
-  call s:update_highlight(s:state, l:col)
+  call s:update_highlight(s:state, l:end_col)
   call s:update_popup(s:state)
 
   if l:match !=# l:text && empty(l:children)
@@ -110,25 +110,22 @@ function s:commit()
     return s:reset()
   endif
 
+  let [l:start_lnum, l:start_col] = s:state.start_pos
   " save cursor position
-  let [l:lnum, l:col] = getcurpos()[1:2]
+  let [l:end_lnum, l:end_col] = getcurpos()[1:2]
 
   let l:match_len = strlen(s:state.match)
   let l:replacement = s:state.candidates[s:state.choice]
 
   call s:setline_range(
-    \ s:state.lnum,
-    \ s:state.start,
+    \ l:start_lnum,
+    \ l:start_col,
     \ l:match_len,
     \ l:replacement)
 
   " restore cursor position
-  if l:lnum == s:state.lnum && l:col >= s:state.start
-    if l:col < s:state.start + l:match_len
-      let l:col = s:state.start + l:match_len
-    endif
-    let l:col += strlen(l:replacement) - l:match_len
-    call cursor(l:lnum, l:col)
+  if l:start_lnum == l:end_lnum && l:start_col <= l:end_col
+    call cursor(l:end_lnum, l:end_col - l:match_len + strlen(l:replacement))
   endif
 
   call s:reset()
@@ -155,22 +152,21 @@ function s:setline_range(lnum, start, len, text)
   call setline(a:lnum, l:pre . a:text . l:post)
 endfunction
 
-function s:update_highlight(state, col)
+function s:update_highlight(state, end_col)
   call s:clear_highlight(a:state)
 
   let l:highlights = a:state.highlights
-  let l:start = a:state.start
-  let l:lnum = a:state.lnum
+  let [l:start_lnum, l:start_col] = s:state.start_pos
   let l:match = a:state.match
 
   call add(l:highlights, matchaddpos(
     \ 'agda_input_pending',
-    \ [[l:lnum, l:start, a:col - l:start]]))
+    \ [[l:start_lnum, l:start_col, a:end_col - l:start_col]]))
 
   if !empty(l:match)
     call add(l:highlights, matchaddpos(
       \ 'agda_input_matched', 
-      \ [[l:lnum, l:start, strlen(l:match)]]))
+      \ [[l:start_lnum, l:start_col, strlen(l:match)]]))
   endif
 endfunction
 
