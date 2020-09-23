@@ -65,8 +65,8 @@ function s:init_plug_mappings()
   nnoremap <buffer><silent> <Plug>(agda-elaborate-give-simplified) :<C-u>call agda#elaborate_give('Simplified')<CR>
   nnoremap <buffer><silent> <Plug>(agda-elaborate-give-instantiated) :<C-u>call agda#elaborate_give('Instantiated')<CR>
   nnoremap <buffer><silent> <Plug>(agda-elaborate-give-normalised) :<C-u>call agda#elaborate_give('Normalised')<CR>
-  nnoremap <buffer><silent> <Plug>(agda-refine) :<C-u>call agda#elaborate_give('False')<CR>
-  nnoremap <buffer><silent> <Plug>(agda-refine-pmlambda) :<C-u>call agda#elaborate_give('True')<CR>
+  nnoremap <buffer><silent> <Plug>(agda-refine) :<C-u>call agda#refine_or_intro('False')<CR>
+  nnoremap <buffer><silent> <Plug>(agda-refine-pmlambda) :<C-u>call agda#refine_or_intro('True')<CR>
   nnoremap <buffer><silent> <Plug>(agda-auto) :<C-u>call agda#auto_maybe_all()<CR>
   nnoremap <buffer><silent> <Plug>(agda-make-case) :<C-u>call agda#make_case()<CR>
   nnoremap <buffer><silent> <Plug>(agda-goal-type-simplified) :<C-u>call agda#goal_type('Simplified')<CR>
