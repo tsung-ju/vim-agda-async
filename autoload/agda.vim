@@ -357,10 +357,14 @@ function s:pretty_context_entry(entry)
 endfunction
 
 function s:pretty_goal_info(goal_info)
-  if a:goal_info.kind ==# 'GoalType'
-     let l:context = a:goal_info.entries
-     call map(l:context, { key, val -> s:pretty_context_entry(val) })
-     return ['Goal : ' . a:goal_info.type, repeat('-', 80)] + l:context
+  if a:goal_info.kind ==# 'CurrentGoal'
+    return ['Goal : ' . a:goal_info.type]
+  elseif a:goal_info.kind ==# 'GoalType'
+    let l:context = a:goal_info.entries
+    call map(l:context, { key, val -> s:pretty_context_entry(val) })
+    return ['Goal : ' . a:goal_info.type, repeat('-', 80)] + l:context
+  else
+    return string(a:goal_info)
   endif
 endfunction
 
