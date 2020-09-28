@@ -30,15 +30,6 @@ function agda#input#activate()
   hi def link agda_input_matched Underlined
 endfunction
 
-function agda#input#map(source, targets)
-  if type(a:targets) != v:t_list
-    let l:targets = [a:targets]
-  else
-    let l:targets = a:targets
-  endif
-  call s:trie_add('\' . a:source, l:targets)
-endfunction
-
 let s:state = {'started': v:false}
 
 function s:start()
@@ -222,20 +213,6 @@ endfunction
 
 function s:mod(n, m)
   return ((a:n % a:m) + a:m) % a:m
-endfunction
-
-function s:trie_add(key, values)
-  let l:node = agda#input#trie#get()
-  for l:i in range(strchars(a:key))
-    let l:char = strcharpart(a:key, l:i, 1)
-    if !has_key(l:node[0], l:char)
-      let l:dict = l:node[0]
-      let l:dict[l:char] = [{}, []]
-    endif
-    let l:node = l:node[0][l:char]
-  endfor
-  call filter(l:node[1], {k, v -> index(a:values, v) == -1})
-  call extend(l:node[1], a:values, 0)
 endfunction
 
 function s:trie_match(key)

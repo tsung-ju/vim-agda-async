@@ -21,7 +21,6 @@ endif
 
 if get(g:, 'agda_input_enable', v:true)
   call agda#input#activate()
-  call map(copy(get(g:, 'agda_input_mappings', {})), {k, v -> agda#input#map(k, v)})
 endif
 
 call agda#mappings#init()
