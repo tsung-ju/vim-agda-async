@@ -97,8 +97,8 @@ function s:init_plug_mappings()
   nnoremap <buffer><silent> <Plug>(agda-show-module-contents-simplified) :<C-u>call agda#show_module_contents_maybe_toplevel('Simplified')<CR>
   nnoremap <buffer><silent> <Plug>(agda-show-module-contents-instantiated) :<C-u>call agda#show_module_contents_maybe_toplevel('Instantiated')<CR>
   nnoremap <buffer><silent> <Plug>(agda-show-module-contents-normalised) :<C-u>call agda#show_module_contents_maybe_toplevel('Normalised')<CR>
-  nnoremap <buffer><silent> <Plug>(agda-compute) :<C-u>call agda#show_module_contents_maybe_toplevel('WithoutForce')<CR>
-  nnoremap <buffer><silent> <Plug>(agda-compute-ignore-abstract) :<C-u>call agda#show_module_contents_maybe_toplevel('WithForce')<CR>
+  nnoremap <buffer><silent> <Plug>(agda-compute) :<C-u>call agda#compute_maybe_toplevel('DefaultCompute')<CR>
+  nnoremap <buffer><silent> <Plug>(agda-compute-ignore-abstract) :<C-u>call agda#compute_maybe_toplevel('IgnoreAbstract')<CR>
 endfunction
 
 function s:map(key, cmd)
