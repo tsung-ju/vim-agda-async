@@ -25,13 +25,18 @@ function agda#highlight#highlight(buf, items)
   let l:state = s:chars2pos_init(l:lines)
 
   for l:item in a:items
-    let l:start = s:chars2pos(l:item.range[0], l:state)
-    let l:end = s:chars2pos(l:item.range[1], l:state)
+    let [l:start_lnum, l:start_col] = s:chars2pos(l:item.range[0], l:state)
+    let [l:end_lnum, l:end_col] = s:chars2pos(l:item.range[1], l:state)
 
     for l:atom in l:item.atoms
-      call s:prop_add_multiline(a:buf, l:lines, l:start, l:end, 'agda_atom_' . l:atom)
+      call s:prop_add_multiline(l:lines, l:start_lnum, l:start_col, {
+        \ 'end_lnum': l:end_lnum,
+        \ 'end_col': l:end_col,
+        \ 'bufnr': a:buf,
+        \ 'type': 'agda_atom_' . l:atom,
+      \ })
       if index(s:atoms_error, l:atom) != -1
-        call s:mark_error(a:buf, l:item, l:atom, l:start)
+        call s:mark_error(a:buf, l:item, l:atom, l:start_lnum, l:start_col)
       endif
     endfor
   endfor
@@ -46,22 +51,18 @@ function agda#highlight#clear(buf)
   endif
 endfunction
 
-function s:prop_add_multiline(buf, lines, start, end, type)
-  let l:lnum = a:start[0]
-  while l:lnum <= a:end[0]
-    let l:start_col = l:lnum == a:start[0] ? a:start[1] : 1
-    let l:end_col = l:lnum == a:end[0] ? a:end[1] : strlen(a:lines[l:lnum - 1]) + 1
-    call prop_add(l:lnum, l:start_col, {
-      \ 'end_lnum': l:lnum,
-      \ 'end_col': l:end_col,
-      \ 'bufnr': a:buf,
-      \ 'type': a:type,
-    \ })
+function s:prop_add_multiline(lines, lnum, col, prop)
+  let l:lnum = a:lnum
+  while l:lnum <= a:prop.end_lnum
+    let l:col = l:lnum == a:lnum ? a:col : 1
+    let l:end_col = l:lnum == a:prop.end_lnum ? a:prop.end_col : strlen(a:lines[l:lnum - 1]) + 1
+    let l:prop = extend(copy(a:prop), { 'end_lnum': l:lnum, 'end_col': l:end_col })
+    call prop_add(l:lnum, l:col, l:prop)
     let l:lnum += 1
   endwhile
 endfunction
 
-function s:mark_error(buf, item, atom, pos)
+function s:mark_error(buf, item, atom, lnum, col)
   if has_key(a:item, 'note') && a:item.note != v:null
     let l:text = a:item.note
   else
@@ -70,8 +71,8 @@ function s:mark_error(buf, item, atom, pos)
 
   call setqflist([{
     \ 'bufnr': a:buf,
-    \ 'lnum': a:pos[0],
-    \ 'col': a:pos[1],
+    \ 'lnum': a:lnum,
+    \ 'col': a:col,
     \ 'text': l:text,
   \ }], 'a')
 endfunction
