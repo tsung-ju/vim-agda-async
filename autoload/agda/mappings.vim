@@ -115,5 +115,5 @@ function s:map_u(key, cmds)
 endfunction
 
 function s:map_normalise(key, cmd)
-  call s:map_u(a:key, [a:cmd . '-simplified', a:cmd . '-instantiated', a:cmd . 'normalised'])
+  call s:map_u(a:key, [a:cmd . '-simplified', a:cmd . '-instantiated', a:cmd . '-normalised'])
 endfunction
