@@ -369,11 +369,13 @@ function s:pretty_goal_info(goal_info)
 endfunction
 
 function s:show_preview(lines)
+  let l:line_limit = get(g:, 'agda_preview_line_number', 7)
+
   silent! belowright noswapfile pedit! \*All\ Goals\*
   wincmd P
   setlocal buftype=nofile nobuflisted bufhidden=wipe nonumber norelativenumber signcolumn=no modifiable
   call setline(1, a:lines)
   setlocal nomodified nomodifiable
-  resize 7
+  exec "resize " . l:line_limit
   wincmd p
 endfunction
