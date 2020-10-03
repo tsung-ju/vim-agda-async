@@ -44,9 +44,6 @@ function agda#mappings#init()
   call s:map_normalise('z', 'search-about-toplevel')
   call s:map_normalise('o', 'show-module-contents')
   call s:map_u('n', ['compute', 'compute-ignore-abstract'])
-
-  nnoremap <buffer> [g <Plug>(agda-previous-goal)
-  nnoremap <buffer> ]g <Plug>(agda-next-goal)
 endfunction
 
 function s:init_plug_mappings()
