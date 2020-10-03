@@ -25,8 +25,6 @@ For example, `<LocalLeader>um` `<LocalLeader>uum`
 | \<LocalLeader>?        |       | v      |          | Show goals |
 | \<LocalLeader>f        |       | v      |          | Next goal |
 | \<LocalLeader>b        |       | v      |          | Previous goal |
-| \]g                    |       | v      |          | Next goal |
-| \[g                    |       | v      |          | Previous goal |
 | \<LocalLeader>\<Space> | v     |        | `u`      | Give |
 | \<LocalLeader>m        | v     |        | `u` `uu` | Elaborate and Give |
 | \<LocalLeader>r        | v     |        |          | Refine |
