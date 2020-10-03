@@ -374,6 +374,5 @@ function s:show_preview(lines)
   setlocal buftype=nofile nobuflisted bufhidden=wipe nonumber norelativenumber signcolumn=no modifiable
   call setline(1, a:lines)
   setlocal nomodified nomodifiable
-  resize 7
   wincmd p
 endfunction
