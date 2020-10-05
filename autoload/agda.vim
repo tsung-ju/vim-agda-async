@@ -314,21 +314,20 @@ function s:handler.DisplayInfo(ctx, msg)
   let l:info = a:msg.info
 
   if l:info.kind ==# 'Error'
-    call s:show_preview(split(l:info.message, "\n"))
-    echohl None
+    call s:show_preview('*Error*', split(l:info.message, "\n"))
   elseif l:info.kind ==# 'AllGoalsWarnings'
-    call map(l:info.visibleGoals, { key, val -> s:pretty_constraint(val) })	
-    let l:goals = l:info.visibleGoals
-    let l:warnings = ['', "Warnings"] + split(l:info.warnings, "\n")
-    let l:errors = ['', "Errors"] + split(l:info.errors, "\n")
-    call s:show_preview(l:goals + l:warnings + l:errors)
+    let l:title = s:pretty_all_goals_warnings_title(l:info)
+    let l:body = s:pretty_all_goals_warnings(l:info)
+    call s:show_preview(l:title, l:body)
   elseif l:info.kind ==# 'Context'
     call map(l:info.context, { key, val -> s:pretty_context_entry(val) })
-    call s:show_preview(l:info.context)
+    call s:show_preview('*Context*', l:info.context)
   elseif l:info.kind ==# 'GoalSpecific'
-    call s:show_preview(s:pretty_goal_info(l:info.goalInfo))
+    let l:title = s:pretty_goal_info_title(l:info.goalInfo)
+    let l:body = s:pretty_goal_info(l:info.goalInfo)
+    call s:show_preview(l:title, l:body)
   else
-    call s:show_preview(string(l:info))
+    call s:show_preview('*Info (' . l:info.kind . ')*', string(l:info))
   endif
 endfunction
 
@@ -356,6 +355,64 @@ function s:pretty_context_entry(entry)
   return l:name . ' : ' . a:entry.binding . l:attributes
 endfunction
 
+function s:pretty_all_goals_warnings_title(info)
+    let l:has_goal = !empty(a:info.visibleGoals)
+    let l:has_error = !empty(a:info.errors)
+    let l:has_warning = !empty(a:info.warnings)
+
+    if !l:has_goal && !l:has_error &&!l:has_warning
+      return '*All Done*'
+    endif
+
+    let l:parts = []
+
+    if l:has_goal
+      call add(l:parts, 'Goals')
+    endif
+    if l:has_error
+      call add(l:parts, 'Errors')
+    endif
+    if l:has_warning
+      call add(l:parts, 'Warnings')
+    endif
+
+    return '*All ' . join(l:parts, ', ') . '*'
+endfunction
+
+function s:pretty_all_goals_warnings(info)
+  let l:goals = map(copy(a:info.visibleGoals), {_, val -> s:pretty_constraint(val)})
+  let l:errors = empty(a:info.errors) ? [] : ['Errors'] + split(a:info.errors, "\n")
+  let l:warnings = empty(a:info.warnings) ? [] : ['Warnings'] + split(a:info.warnings, "\n")
+
+  let l:result = []
+  call extend(l:result, l:goals)
+  if !empty(l:result) && !empty(l:errors)
+    call add(l:result, '')
+  endif
+  call extend(l:result, l:errors)
+  if !empty(l:result) && !empty(l:warnings)
+    call add(l:result, '')
+  endif
+  call extend(l:result, l:warnings)
+  return l:result
+endfunction
+
+function s:pretty_goal_info_title(goal_info)
+  if a:goal_info.kind ==# 'HelperFunction'
+    return '*Helper Function*',
+  elseif a:goal_info.kind ==# 'NormalForm'
+    return '*Norma Form*'
+  elseif a:goal_info.kind ==# 'GoalType'
+    return '*Goal Type etc.*'
+  elseif a:goal_info.kind ==# 'CurrentGoal'
+    return '*Current Goal*'
+  elseif a:goal_info.kind ==# 'InferredType'
+    return '*Inferred Type*'
+  else
+    return '*Goal Info (' . a:goal_info.kind . ')*'
+  endif
+endfunction
+
 function s:pretty_goal_info(goal_info)
   if a:goal_info.kind ==# 'CurrentGoal'
     return ['Goal : ' . a:goal_info.type]
@@ -368,11 +425,12 @@ function s:pretty_goal_info(goal_info)
   endif
 endfunction
 
-function s:show_preview(lines)
-  silent! belowright noswapfile pedit! \*All\ Goals\*
+function s:show_preview(title, lines)
+  execute 'silent belowright noswapfile pedit ' . fnameescape(tempname())
   wincmd P
   setlocal buftype=nofile nobuflisted bufhidden=wipe nonumber norelativenumber signcolumn=no modifiable
   call setline(1, a:lines)
   setlocal nomodified nomodifiable
+  let &l:statusline = a:title . ' %w'
   wincmd p
 endfunction
