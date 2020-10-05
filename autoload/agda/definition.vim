@@ -34,12 +34,7 @@ function agda#definition#go(buf)
   end
 
   let l:locations = getbufvar(a:buf, 'agda_definition_locations')
-  let l:location = locations[l:prop.id]
-  let l:newbuf = bufadd(l:location.filepath)
-
-  normal m'
-  execute 'buffer ' . newbuf
-  call search('\%^\_.\{' . (location.position - 1) . '}\zs', 'w')
+  call s:jump_to(l:locations[l:prop.id])
 endfunction
 
 function agda#definition#add(buf, start, end, location)
@@ -49,11 +44,11 @@ function agda#definition#add(buf, start, end, location)
   call add(l:locations, a:location)
   let l:id = len(l:locations) - 1
   call prop_add(a:start[0], a:start[1], {
-  \ 'type': 'agda_definition',
-  \ 'end_lnum': a:end[0],
-  \ 'end_col': a:end[1],
-  \ 'bufnr': a:buf,
-  \ 'id': l:id
+    \ 'type': 'agda_definition',
+    \ 'end_lnum': a:end[0],
+    \ 'end_col': a:end[1],
+    \ 'bufnr': a:buf,
+    \ 'id': l:id
   \ })
 endfunction
 
@@ -64,4 +59,11 @@ function agda#definition#clear(buf)
 
   call prop_remove({'type': 'agda_definition', 'bufnr': a:buf, 'all': v:true})
   call setbufvar(a:buf, 'agda_definition_locations', [])
+endfunction
+
+function s:jump_to(location)
+  let l:newbuf = bufadd(a:location.filepath)
+  normal m'
+  execute l:newbuf . 'buffer'
+  call search('\%^\_.\{' . (a:location.position - 1) . '}\zs', 'w')
 endfunction
