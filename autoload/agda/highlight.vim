@@ -16,53 +16,56 @@
 " along with vim-agda-async.  If not, see <https://www.gnu.org/licenses/>.
 
 function agda#highlight#highlight(buf, items)
-  if !getbufvar(a:buf, 'agda_highlight_inited', v:false)
-    call s:init(a:buf)
-    call setbufvar(a:buf, 'agda_highlight_inited', v:true)
-  endif
-
   let l:lines = getbufline(a:buf, 1, '$')
   let l:state = s:chars2pos_init(l:lines)
 
   for l:item in a:items
-    let [l:start_lnum, l:start_col] = s:chars2pos(l:item.range[0], l:state)
-    let [l:end_lnum, l:end_col] = s:chars2pos(l:item.range[1], l:state)
+    let l:start = s:chars2pos(l:item.range[0], l:state)
+    let l:end = s:chars2pos(l:item.range[1], l:state)
+
+    let l:ranges = s:split_multiline_range(l:lines, l:start, l:end)
+
+    for [l:range_start, l:range_end] in l:ranges
+      for l:atom in l:item.atoms
+        call prop_add(l:range_start[0], l:range_start[1], {
+          \ 'end_lnum': l:range_end[0],
+          \ 'end_col': l:range_end[1],
+          \ 'bufnr': a:buf,
+          \ 'type': 'agda_atom_' . l:atom,
+        \ })
+      endfor
+    endfor
+
+    if type(l:item.definitionSite) ==# v:t_dict
+      for [l:range_start, l:range_end] in l:ranges
+        call agda#definition#add(a:buf, l:range_start, l:range_end, l:item.definitionSite)
+      endfor
+    endif
 
     for l:atom in l:item.atoms
-      call s:prop_add_multiline(l:lines, l:start_lnum, l:start_col, {
-        \ 'end_lnum': l:end_lnum,
-        \ 'end_col': l:end_col,
-        \ 'bufnr': a:buf,
-        \ 'type': 'agda_atom_' . l:atom,
-      \ })
       if index(s:atoms_error, l:atom) != -1
-        call s:mark_error(a:buf, l:item, l:atom, l:start_lnum, l:start_col)
+        call s:mark_error(a:buf, l:item, l:atom, l:start)
       endif
     endfor
   endfor
 endfunction
 
 function agda#highlight#clear(buf)
-  if getbufvar(a:buf, 'agda_highlight_inited', v:false)
-    for l:atom in s:atoms_all
-      call prop_remove({'type': 'agda_atom_' . l:atom, 'bufnr': a:buf, 'all': v:true})
-    endfor
-    call setqflist([], 'f')
-  endif
+  for l:atom in s:atoms_all
+    call prop_remove({'type': 'agda_atom_' . l:atom, 'bufnr': a:buf, 'all': v:true})
+  endfor
+  call setqflist([], 'f')
 endfunction
 
-function s:prop_add_multiline(lines, lnum, col, prop)
-  let l:lnum = a:lnum
-  while l:lnum <= a:prop.end_lnum
-    let l:col = l:lnum == a:lnum ? a:col : 1
-    let l:end_col = l:lnum == a:prop.end_lnum ? a:prop.end_col : strlen(a:lines[l:lnum - 1]) + 1
-    let l:prop = extend(copy(a:prop), { 'end_lnum': l:lnum, 'end_col': l:end_col })
-    call prop_add(l:lnum, l:col, l:prop)
-    let l:lnum += 1
-  endwhile
+function s:split_multiline_range(lines, start, end)
+  let l:result = range(a:start[0], a:end[0])
+  call map(l:result, {_, lnum -> [[lnum, 1], [lnum, strlen(a:lines[lnum - 1]) + 1]]})
+  let l:result[0][0][1] = a:start[1]
+  let l:result[-1][1][1] = a:end[1]
+  return l:result
 endfunction
 
-function s:mark_error(buf, item, atom, lnum, col)
+function s:mark_error(buf, item, atom, pos)
   if has_key(a:item, 'note') && a:item.note != v:null
     let l:text = a:item.note
   else
@@ -71,8 +74,8 @@ function s:mark_error(buf, item, atom, lnum, col)
 
   call setqflist([{
     \ 'bufnr': a:buf,
-    \ 'lnum': a:lnum,
-    \ 'col': a:col,
+    \ 'lnum': a:pos[0],
+    \ 'col': a:pos[1],
     \ 'text': l:text,
   \ }], 'a')
 endfunction
@@ -102,10 +105,10 @@ function s:chars2pos(chars, state)
   return [l:lnum, l:col]
 endfunction
 
-function s:init(buf)
+function s:init()
   for l:atom in s:atoms_all
     let l:type = 'agda_atom_' . l:atom
-    call prop_type_add(l:type, {'highlight': l:type, 'bufnr': a:buf, 'combine': 1})
+    call prop_type_add(l:type, {'highlight': l:type, 'combine': 1})
   endfor
 endfunction
 
@@ -161,3 +164,5 @@ let s:atoms_error = [
   \ 'confluenceproblem',
   \ 'missingdefinition',
 \ ]
+
+call s:init()

@@ -44,9 +44,15 @@ function agda#mappings#init()
   call s:map_normalise('z', 'search-about-toplevel')
   call s:map_normalise('o', 'show-module-contents')
   call s:map_u('n', ['compute', 'compute-ignore-abstract'])
+
+  if !hasmapto('<Plug>(agda-goto-definition)', 'n')
+    nmap <buffer> gd <Plug>(agda-goto-definition)
+  endif
 endfunction
 
 function s:init_plug_mappings()
+  nnoremap <buffer><silent> <Plug>(agda-goto-definition) :<C-u>call agda#definition#go(bufnr('%'))<CR>
+
   nnoremap <buffer><silent> <Plug>(agda-load) :<C-u>call agda#load()<CR>
   nnoremap <buffer><silent> <Plug>(agda-compile) :<C-u>call agda#compile()<CR>
   nnoremap <buffer><silent> <Plug>(agda-restart) :<C-u>call agda#restart()<CR>

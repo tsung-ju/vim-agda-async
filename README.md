@@ -15,6 +15,7 @@ For example, `<LocalLeader>um` `<LocalLeader>uum`
 
 | Binding                | Local | Global | Prefix   | Description |
 | ---------------------- | ----- | ------ | -------- | ----------- |
+| gd                     |       |        |          | Goto definition |
 | \<LocalLeader>l        |       | v      |          | Save the file and Load |
 | \<LocalLeader>xc       |       | v      |          | Save the file and Compile |
 | \<LocalLeader>xr       |       | v      |          | Kill and restart Agda |
