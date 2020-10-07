@@ -74,17 +74,18 @@ function s:info_formatters.AllGoalsWarnings(info)
 endfunction
 
 function s:info_formatters.Context(info)
-  let l:entries = map(copy(a:info.context), function("s:format_context_entry"))
+  let l:entries = map(copy(a:info.context), {_, val -> s:format_context_entry(val)})
   return ['*Context*', join(l:entries, "\n")]
 endfunction
 
 let s:goal_info_formatters = {}
 
 function s:info_formatters.GoalSpecific(info)
-  if has_key(s:goal_info_formatters, a:info.goalInfo.kind)
-    return s:goal_info_formatters[a:info.goalInfo.kind](a:info.goalInfo)
+  let l:goal_info = a:info.goalInfo
+  if has_key(s:goal_info_formatters, l:goal_info.kind)
+    return s:goal_info_formatters[l:goal_info.kind](l:goal_info)
   else
-    return ['*GoalInfo (' . a:goal_info.kind . ')*', string(a:goal_info)]
+    return ['*GoalInfo (' . l:goal_info.kind . ')*', string(l:goal_info)]
   endif
 endfunction
 
@@ -93,8 +94,8 @@ function s:goal_info_formatters.CurrentGoal(goal_info)
 endfunction
 
 function s:goal_info_formatters.GoalType(goal_info)
-  let l:entries = map(copy(a:goal_info.entries), function("s:format_context_entry"))
-  let l:body = 'Goal : ' . a:goal_info.type . repeat('-', 80) . join(l:entries, "\n")
+  let l:entries = map(copy(a:goal_info.entries), {_, val -> s:format_context_entry(val)})
+  let l:body = 'Goal : ' . a:goal_info.type . "\n" . repeat('-', 80) . "\n" .  join(l:entries, "\n")
   return ['*Goal Type etc.*', l:body]
 endfunction
 
