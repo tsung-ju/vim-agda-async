@@ -31,6 +31,8 @@ endfunction
 function agda#stop()
   if exists('b:agda_ctx')
     call job_stop(b:agda_ctx.job)
+    call agda#highlight#clear(b:agda_ctx.buf)
+    call agda#definition#clear(b:agda_ctx.buf)
     unlet b:agda_ctx
   endif
 endfunction
@@ -265,7 +267,7 @@ endfunction
 
 function s:handle_response(ctx, ch, msg)
   let l:msg = s:parse_response(a:msg)
-  if has_key(s:handler, l:msg.kind)
+  if type(l:msg) == v:t_dict && has_key(s:handler, l:msg.kind)
     call s:handler[l:msg.kind](a:ctx, l:msg)
   endif
 endfunction
